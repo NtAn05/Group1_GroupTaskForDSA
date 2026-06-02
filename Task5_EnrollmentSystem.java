@@ -21,14 +21,36 @@ public class Task5_EnrollmentSystem {
     }
 
     public boolean enroll(String courseCode, String studentId) {
-        // TODO: implement
+        courseCode = courseCode.trim().toUpperCase();
+    studentId = studentId.trim().toUpperCase();
+    if (!courseEnrollments.containsKey(courseCode)) {
         return false;
+    }
+    if (!studentDirectory.containsKey(studentId)) {
+        return false;
+    }
+    HashSet<String> students = courseEnrollments.get(courseCode);
+    if (students.contains(studentId)) {
+        return false;
+    }
+    students.add(studentId);
+    return true;
     }
 
     public boolean drop(String courseCode, String studentId) {
-        // TODO: implement
+        courseCode = courseCode.trim().toUpperCase();
+    studentId = studentId.trim().toUpperCase();
+    if (!courseEnrollments.containsKey(courseCode)) {
         return false;
     }
+    HashSet<String> students = courseEnrollments.get(courseCode);
+    if (!students.contains(studentId)) {
+        return false;
+    }
+    students.remove(studentId);
+    return true;
+}
+
 
     public void listStudentsInCourse(String courseCode) {
         // TODO: implement

@@ -1,5 +1,8 @@
 import java.util.*;
 
+Long-ValidationAndNormalization
+// Task 5 — HashSet & HashMap: Course Enrollment System
+// Author (Member 3): Long
 // Task 5  HashSet & HashMap: Course Enrollment System
 // Author (Member 1): An
 public class Task5_EnrollmentSystem {
@@ -10,6 +13,42 @@ public class Task5_EnrollmentSystem {
     public Task5_EnrollmentSystem() {
         studentDirectory = new HashMap<>();
         courseEnrollments = new HashMap<>();
+    }
+    //Helper function to validation and Normalization
+    //Chuẩn hóa dữ liệu đầu vào
+    private String santitizeInput(String input, boolean isCode) {
+        if (input ==null) return "";
+        String cleaned = input.trim();
+        return isCode ? cleaned.toUpperCase() : cleaned;
+    }
+
+    //Kiểm tra Student đã tồn tại hay chưa
+    private boolean isStudentExists(String studentId) {
+        return studentDirectory.containsKey(studentId);
+    }
+
+    //Kiểm tra Course đã tồn tại hay chưa
+    private boolean isCourseExists(String courseId) {
+        return courseEnrollments.containsKey(courseId);
+    }
+
+    //Kiểm tra trùng lặp đăng kí (học sinh đã ở trong lớp hay chưa)
+    private boolean isAlreadyEnrolled(String courseCode, String studentId) {
+        HashSet<String> students = courseEnrollments.get(courseCode);
+        return students != null && students.contains(studentId);
+    }
+
+    //Hàm tổng hợp kiểm tra nhanh điều kiện tiên quyết cho enroll và Drop
+    private boolean validateQueryConditions(String courseCode, String studentId) {
+        if(isCourseExists(courseCode)) {
+            System.out.println("Validation Error: Course " + courseCode + " does not exists");
+            return false;
+        }
+        if(isStudentExists(studentId)) {
+            System.out.println("Validation Error: Student " + studentId + " does not exists");
+            return false;
+        }
+        return true;
     }
 
     public void registerStudent(String id, String name) {

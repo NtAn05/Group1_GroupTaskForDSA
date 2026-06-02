@@ -1,0 +1,121 @@
+==================================================
+TEST CASE 1: List students in course DSA201
+Input:
+5
+DSA201
+0
+Output:
+
+Menu:
+1. Register student
+2. Create course
+3. Enroll student
+4. Drop student
+5. List students in course
+6. Find courses of student
+0. Exit
+
+Choice: Enter course code: Course DSA201: An, Bao, Chi, Dung
+
+Menu:
+1. Register student
+2. Create course
+3. Enroll student
+4. Drop student
+5. List students in course
+6. Find courses of student
+0. Exit
+
+Choice: Exit
+
+==================================================
+TEST CASE 2: Enroll same student twice
+Input:
+3
+DSA201
+ST002
+0
+Output:
+
+Menu:
+1. Register student
+2. Create course
+3. Enroll student
+4. Drop student
+5. List students in course
+6. Find courses of student
+0. Exit
+
+Choice: Enter course code: Enter student ID: Student ST002 already enrolled in DSA201
+
+Menu:
+1. Register student
+2. Create course
+3. Enroll student
+4. Drop student
+5. List students in course
+6. Find courses of student
+0. Exit
+
+Choice: Exit
+
+==================================================
+TEST CASE 3: Drop student not enrolled in course
+Input:
+4
+DSA201
+ST010
+0
+Output:
+
+Menu:
+1. Register student
+2. Create course
+3. Enroll student
+4. Drop student
+5. List students in course
+6. Find courses of student
+0. Exit
+
+Choice: Enter course code: Enter student ID: Student ST010 is not enrolled in DSA201
+
+Menu:
+1. Register student
+2. Create course
+3. Enroll student
+4. Drop student
+5. List students in course
+6. Find courses of student
+0. Exit
+
+Choice: Exit
+
+==================================================
+TEST CASE 4: Find courses of student ST002
+Input:
+6
+ST002
+0
+Output:
+
+Menu:
+1. Register student
+2. Create course
+3. Enroll student
+4. Drop student
+5. List students in course
+6. Find courses of student
+0. Exit
+
+Choice: Enter student ID: Courses of ST002: [DSA201, JAVA101]
+
+Menu:
+1. Register student
+2. Create course
+3. Enroll student
+4. Drop student
+5. List students in course
+6. Find courses of student
+0. Exit
+
+Choice: Exit

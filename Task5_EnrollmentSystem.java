@@ -1,284 +1,254 @@
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Scanner;
 
-Long-ValidationAndNormalization
-// Task 5 — HashSet & HashMap: Course Enrollment System
-// Author (Member 3): Long
-// Task 5  HashSet & HashMap: Course Enrollment System
-// Author (Member 1): An
 public class Task5_EnrollmentSystem {
     private HashMap<String, String> studentDirectory;
     private HashMap<String, HashSet<String>> courseEnrollments;
 
-
     public Task5_EnrollmentSystem() {
         studentDirectory = new HashMap<>();
         courseEnrollments = new HashMap<>();
-    }
-    //Helper function to validation and Normalization
-    //Chuẩn hóa dữ liệu đầu vào
-    private String santitizeInput(String input, boolean isCode) {
-        if (input ==null) return "";
-        String cleaned = input.trim();
-        return isCode ? cleaned.toUpperCase() : cleaned;
-    }
-
-    //Kiểm tra Student đã tồn tại hay chưa
-    private boolean isStudentExists(String studentId) {
-        return studentDirectory.containsKey(studentId);
-    }
-
-    //Kiểm tra Course đã tồn tại hay chưa
-    private boolean isCourseExists(String courseId) {
-        return courseEnrollments.containsKey(courseId);
-    }
-
-    //Kiểm tra trùng lặp đăng kí (học sinh đã ở trong lớp hay chưa)
-    private boolean isAlreadyEnrolled(String courseCode, String studentId) {
-        HashSet<String> students = courseEnrollments.get(courseCode);
-        return students != null && students.contains(studentId);
-    }
-
-    //Hàm tổng hợp kiểm tra nhanh điều kiện tiên quyết cho enroll và Drop
-    private boolean validateQueryConditions(String courseCode, String studentId) {
-        if(isCourseExists(courseCode)) {
-            System.out.println("Validation Error: Course " + courseCode + " does not exists");
-            return false;
-        }
-        if(isStudentExists(studentId)) {
-            System.out.println("Validation Error: Student " + studentId + " does not exists");
-            return false;
-        }
-        return true;
+        initMockData();
     }
 
     public void registerStudent(String id, String name) {
-        if (id == null || name == null) return;
-        id = id.trim();
+        id = normalize(id);
         name = name.trim();
-        if (id.isEmpty() || name.isEmpty()) return;
+
+        if (id.isEmpty() || name.isEmpty()) {
+            System.out.println("Invalid student information");
+            return;
+        }
+
+        if (studentDirectory.containsKey(id)) {
+            System.out.println("Student " + id + " already exists");
+            return;
+        }
 
         studentDirectory.put(id, name);
         System.out.println("Registered student " + id + " -> " + name);
     }
 
     public void createCourse(String courseCode) {
-        if (courseCode == null) return;
-        courseCode = courseCode.trim();
-        if (courseCode.isEmpty()) return;
+        courseCode = normalize(courseCode);
 
-        courseEnrollments.putIfAbsent(courseCode, new HashSet<>());
+        if (courseCode.isEmpty()) {
+            System.out.println("Invalid course code");
+            return;
+        }
+
+        if (courseEnrollments.containsKey(courseCode)) {
+            System.out.println("Course " + courseCode + " already exists");
+            return;
+        }
+
+        courseEnrollments.put(courseCode, new HashSet<>());
         System.out.println("Created course " + courseCode);
     }
 
     public boolean enroll(String courseCode, String studentId) {
-        courseCode = courseCode.trim().toUpperCase();
-    studentId = studentId.trim().toUpperCase();
-    if (!courseEnrollments.containsKey(courseCode)) {
-        return false;
-    }
-    if (!studentDirectory.containsKey(studentId)) {
-        return false;
-    }
-    HashSet<String> students = courseEnrollments.get(courseCode);
-    if (students.contains(studentId)) {
-        return false;
-    }
-    students.add(studentId);
-    return true;
+        courseCode = normalize(courseCode);
+        studentId = normalize(studentId);
+
+        if (!courseEnrollments.containsKey(courseCode)) {
+            System.out.println("Course " + courseCode + " does not exist");
+            return false;
+        }
+
+        if (!studentDirectory.containsKey(studentId)) {
+            System.out.println("Student " + studentId + " does not exist");
+            return false;
+        }
+
+        HashSet<String> students = courseEnrollments.get(courseCode);
+
+        if (students.contains(studentId)) {
+            System.out.println("Student " + studentId + " already enrolled in " + courseCode);
+            return false;
+        }
+
+        students.add(studentId);
+        System.out.println("Enrolled " + studentId + " into " + courseCode);
+        return true;
     }
 
     public boolean drop(String courseCode, String studentId) {
-        courseCode = courseCode.trim().toUpperCase();
-    studentId = studentId.trim().toUpperCase();
-    if (!courseEnrollments.containsKey(courseCode)) {
-        return false;
-    }
-    HashSet<String> students = courseEnrollments.get(courseCode);
-    if (!students.contains(studentId)) {
-        return false;
-    }
-    students.remove(studentId);
-    return true;
-}
+        courseCode = normalize(courseCode);
+        studentId = normalize(studentId);
 
+        if (!courseEnrollments.containsKey(courseCode)) {
+            System.out.println("Course " + courseCode + " does not exist");
+            return false;
+        }
+
+        if (!studentDirectory.containsKey(studentId)) {
+            System.out.println("Student " + studentId + " does not exist");
+            return false;
+        }
+
+        HashSet<String> students = courseEnrollments.get(courseCode);
+
+        if (!students.contains(studentId)) {
+            System.out.println("Student " + studentId + " is not enrolled in " + courseCode);
+            return false;
+        }
+
+        students.remove(studentId);
+        System.out.println("Dropped " + studentId + " from " + courseCode);
+        return true;
+    }
 
     public void listStudentsInCourse(String courseCode) {
-       // Check if the course exists
+        courseCode = normalize(courseCode);
+
         if (!courseEnrollments.containsKey(courseCode)) {
-            System.out.println("Course " + courseCode + " does not exist.");
-            return;
-        }
-        
-        HashSet<String> enrolledIds = courseEnrollments.get(courseCode);
-        
-        // Handling the case where no one has registered for the class
-        if (enrolledIds == null || enrolledIds.isEmpty()) {
-            System.out.println("Course " + courseCode + ": ");
+            System.out.println("Course " + courseCode + " does not exist");
             return;
         }
 
-       // Convert from HashSet (ID) to ArrayList (Name) for sorting
-        ArrayList<String> studentNames = new ArrayList<>();
-        for (String studentId : enrolledIds) {
-            String name = studentDirectory.get(studentId);
-            if (name != null) {
-                studentNames.add(name);
-            }
+        HashSet<String> studentIds = courseEnrollments.get(courseCode);
+        ArrayList<String> names = new ArrayList<>();
+
+        for (String studentId : studentIds) {
+            names.add(studentDirectory.get(studentId));
         }
 
-        // Sort alphabetically by NAME
-        Collections.sort(studentNames);
-        
-        // Concatenate strings to print
-        System.out.print("Course " + courseCode + ": ");
-        System.out.println(String.join(", ", studentNames));
+        Collections.sort(names);
+
+        System.out.println("Course " + courseCode + ": " + String.join(", ", names));
     }
-
 
     public void listCoursesOfStudent(String studentId) {
-       // Check if the student exists in the system
+        studentId = normalize(studentId);
+
         if (!studentDirectory.containsKey(studentId)) {
-            System.out.println("Student ID " + studentId + " does not exist in directory.");
+            System.out.println("Student " + studentId + " does not exist");
             return;
         }
 
-        ArrayList<String> enrolledCourses = new ArrayList<>();
-        
-       // Browse through HashMap courseEnrollments
-        for (Map.Entry<String, HashSet<String>> entry : courseEnrollments.entrySet()) {
-            HashSet<String> studentsInCourse = entry.getValue();
-           // If the student set for that course contains this ID, add the course code to the list.
-            if (studentsInCourse != null && studentsInCourse.contains(studentId)) {
-                enrolledCourses.add(entry.getKey());
+        ArrayList<String> courses = new ArrayList<>();
+
+        for (String courseCode : courseEnrollments.keySet()) {
+            if (courseEnrollments.get(courseCode).contains(studentId)) {
+                courses.add(courseCode);
             }
         }
 
-        // Print the result in the correct array format
-        System.out.println("Courses of " + studentId + ": " + enrolledCourses.toString());
-    }
-    public void printCourseWithLargestEnrollment() {
-        if (courseEnrollments.isEmpty()) {
-            System.out.println("No courses available in the system yet.");
-            return;
-        }
-
-        String maxCourseCode = null;
-        int maxStudents = -1;
-
-        // Iterate over Map to find the most crowded course
-        for (Map.Entry<String, HashSet<String>> entry : courseEnrollments.entrySet()) {
-            int currentSize = (entry.getValue() == null) ? 0 : entry.getValue().size();
-            
-            if (currentSize > maxStudents) {
-                maxStudents = currentSize;
-                maxCourseCode = entry.getKey();
-            }
-        }
-
-        if (maxStudents > 0) {
-            System.out.println("Course with largest enrollment: " + maxCourseCode + " (" + maxStudents + " students)");
-        } else {
-            System.out.println("All courses currently have 0 students.");
-        }
+        Collections.sort(courses);
+        System.out.println("Courses of " + studentId + ": " + courses);
     }
 
-    private static String readNonEmpty(Scanner sc) {
-        while (true) {
-            String s = sc.nextLine().trim();
-            if (!s.isEmpty()) return s;
-            System.out.print("Input cannot be empty. Try again: ");
+    private String normalize(String input) {
+        if (input == null) {
+            return "";
         }
+        return input.trim().toUpperCase();
     }
 
-    public static void main(String[] args) 
-    {
+    private void initMockData() {
+        studentDirectory.put("ST001", "An");
+        studentDirectory.put("ST002", "Bao");
+        studentDirectory.put("ST003", "Chi");
+        studentDirectory.put("ST004", "Dung");
+        studentDirectory.put("ST005", "Ha");
+        studentDirectory.put("ST006", "Linh");
+        studentDirectory.put("ST007", "Minh");
+        studentDirectory.put("ST008", "Nam");
+        studentDirectory.put("ST009", "Phong");
+        studentDirectory.put("ST010", "Quyen");
+
+        courseEnrollments.put("DSA201", new HashSet<>());
+        courseEnrollments.put("JAVA101", new HashSet<>());
+        courseEnrollments.put("DBI202", new HashSet<>());
+
+        courseEnrollments.get("DSA201").add("ST001");
+        courseEnrollments.get("DSA201").add("ST002");
+        courseEnrollments.get("DSA201").add("ST003");
+        courseEnrollments.get("DSA201").add("ST004");
+
+        courseEnrollments.get("JAVA101").add("ST002");
+        courseEnrollments.get("JAVA101").add("ST005");
+        courseEnrollments.get("JAVA101").add("ST006");
+
+        courseEnrollments.get("DBI202").add("ST007");
+        courseEnrollments.get("DBI202").add("ST008");
+        courseEnrollments.get("DBI202").add("ST009");
+        courseEnrollments.get("DBI202").add("ST010");
+    }
+
+    public static void main(String[] args) {
         Task5_EnrollmentSystem system = new Task5_EnrollmentSystem();
-        Scanner sc = new Scanner(System.in);
-        int choice;
+        Scanner scanner = new Scanner(System.in);
 
-        do {
-
-            System.out.println("\n===== MENU =====");
+        while (true) {
+            System.out.println();
+            System.out.println("Menu:");
             System.out.println("1. Register student");
             System.out.println("2. Create course");
             System.out.println("3. Enroll student");
             System.out.println("4. Drop student");
             System.out.println("5. List students in course");
             System.out.println("6. Find courses of student");
-            System.out.println("7. Largest enrollment");
             System.out.println("0. Exit");
-
+            System.out.println();
             System.out.print("Choice: ");
-            choice = Integer.parseInt(sc.nextLine());
+
+            String choice = scanner.nextLine().trim();
 
             switch (choice) {
-
-                case 1:
-                    System.out.print("Student ID: ");
-                    String id = sc.nextLine();
-
-                    System.out.print("Student Name: ");
-                    String name = sc.nextLine();
-
+                case "1":
+                    System.out.print("Enter student ID: ");
+                    String id = scanner.nextLine();
+                    System.out.print("Enter student name: ");
+                    String name = scanner.nextLine();
                     system.registerStudent(id, name);
                     break;
 
-                case 2:
-                    System.out.print("Course Code: ");
-                    String course = sc.nextLine();
-
-                    system.createCourse(course);
+                case "2":
+                    System.out.print("Enter course code: ");
+                    String courseCode = scanner.nextLine();
+                    system.createCourse(courseCode);
                     break;
 
-                case 3:
-                    System.out.print("Course Code: ");
-                    course = sc.nextLine();
-
-                    System.out.print("Student ID: ");
-                    id = sc.nextLine();
-
-                    system.enroll(course, id);
+                case "3":
+                    System.out.print("Enter course code: ");
+                    String enrollCourse = scanner.nextLine();
+                    System.out.print("Enter student ID: ");
+                    String enrollStudent = scanner.nextLine();
+                    system.enroll(enrollCourse, enrollStudent);
                     break;
 
-                case 4:
-                    System.out.print("Course Code: ");
-                    course = sc.nextLine();
-
-                    System.out.print("Student ID: ");
-                    id = sc.nextLine();
-
-                    system.drop(course, id);
+                case "4":
+                    System.out.print("Enter course code: ");
+                    String dropCourse = scanner.nextLine();
+                    System.out.print("Enter student ID: ");
+                    String dropStudent = scanner.nextLine();
+                    system.drop(dropCourse, dropStudent);
                     break;
 
-                case 5:
-                    System.out.print("Course Code: ");
-                    course = sc.nextLine();
-
-                    system.listStudentsInCourse(course);
+                case "5":
+                    System.out.print("Enter course code: ");
+                    String listCourse = scanner.nextLine();
+                    system.listStudentsInCourse(listCourse);
                     break;
 
-                case 6:
-                    System.out.print("Student ID: ");
-                    id = sc.nextLine();
-
-                    system.listCoursesOfStudent(id);
+                case "6":
+                    System.out.print("Enter student ID: ");
+                    String searchStudent = scanner.nextLine();
+                    system.listCoursesOfStudent(searchStudent);
                     break;
 
-                 case 7:
-                    system.largestEnrollmentCourse();
-                    break;
-
-                case 0:
+                case "0":
                     System.out.println("Exit");
-                    break;
+                    scanner.close();
+                    return;
 
                 default:
-                    System.out.println("Invalid choice.");
+                    System.out.println("Invalid choice");
             }
-
-        } while (choice != 0);
-
-        sc.close();
+        }
     }
 }
-

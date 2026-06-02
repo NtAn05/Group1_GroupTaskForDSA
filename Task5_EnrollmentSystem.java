@@ -13,11 +13,22 @@ public class Task5_EnrollmentSystem {
     }
 
     public void registerStudent(String id, String name) {
-        // TODO: implement
+        if (id == null || name == null) return;
+        id = id.trim();
+        name = name.trim();
+        if (id.isEmpty() || name.isEmpty()) return;
+
+        studentDirectory.put(id, name);
+        System.out.println("Registered student " + id + " -> " + name);
     }
 
     public void createCourse(String courseCode) {
-        // TODO: implement
+        if (courseCode == null) return;
+        courseCode = courseCode.trim();
+        if (courseCode.isEmpty()) return;
+
+        courseEnrollments.putIfAbsent(courseCode, new HashSet<>());
+        System.out.println("Created course " + courseCode);
     }
 
     public boolean enroll(String courseCode, String studentId) {

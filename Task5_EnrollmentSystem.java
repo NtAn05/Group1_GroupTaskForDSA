@@ -103,11 +103,83 @@ public class Task5_EnrollmentSystem {
 
 
     public void listStudentsInCourse(String courseCode) {
-        // TODO: implement
+       // Check if the course exists
+        if (!courseEnrollments.containsKey(courseCode)) {
+            System.out.println("Course " + courseCode + " does not exist.");
+            return;
+        }
+        
+        HashSet<String> enrolledIds = courseEnrollments.get(courseCode);
+        
+        // Handling the case where no one has registered for the class
+        if (enrolledIds == null || enrolledIds.isEmpty()) {
+            System.out.println("Course " + courseCode + ": ");
+            return;
+        }
+
+       // Convert from HashSet (ID) to ArrayList (Name) for sorting
+        ArrayList<String> studentNames = new ArrayList<>();
+        for (String studentId : enrolledIds) {
+            String name = studentDirectory.get(studentId);
+            if (name != null) {
+                studentNames.add(name);
+            }
+        }
+
+        // Sort alphabetically by NAME
+        Collections.sort(studentNames);
+        
+        // Concatenate strings to print
+        System.out.print("Course " + courseCode + ": ");
+        System.out.println(String.join(", ", studentNames));
     }
 
+
     public void listCoursesOfStudent(String studentId) {
-        // TODO: implement
+       // Check if the student exists in the system
+        if (!studentDirectory.containsKey(studentId)) {
+            System.out.println("Student ID " + studentId + " does not exist in directory.");
+            return;
+        }
+
+        ArrayList<String> enrolledCourses = new ArrayList<>();
+        
+       // Browse through HashMap courseEnrollments
+        for (Map.Entry<String, HashSet<String>> entry : courseEnrollments.entrySet()) {
+            HashSet<String> studentsInCourse = entry.getValue();
+           // If the student set for that course contains this ID, add the course code to the list.
+            if (studentsInCourse != null && studentsInCourse.contains(studentId)) {
+                enrolledCourses.add(entry.getKey());
+            }
+        }
+
+        // Print the result in the correct array format
+        System.out.println("Courses of " + studentId + ": " + enrolledCourses.toString());
+    }
+    public void printCourseWithLargestEnrollment() {
+        if (courseEnrollments.isEmpty()) {
+            System.out.println("No courses available in the system yet.");
+            return;
+        }
+
+        String maxCourseCode = null;
+        int maxStudents = -1;
+
+        // Iterate over Map to find the most crowded course
+        for (Map.Entry<String, HashSet<String>> entry : courseEnrollments.entrySet()) {
+            int currentSize = (entry.getValue() == null) ? 0 : entry.getValue().size();
+            
+            if (currentSize > maxStudents) {
+                maxStudents = currentSize;
+                maxCourseCode = entry.getKey();
+            }
+        }
+
+        if (maxStudents > 0) {
+            System.out.println("Course with largest enrollment: " + maxCourseCode + " (" + maxStudents + " students)");
+        } else {
+            System.out.println("All courses currently have 0 students.");
+        }
     }
 
     private static String readNonEmpty(Scanner sc) {
@@ -192,9 +264,9 @@ public class Task5_EnrollmentSystem {
                     system.listCoursesOfStudent(id);
                     break;
 
-             /*    case 7:
+                 case 7:
                     system.largestEnrollmentCourse();
-                    break;*/
+                    break;
 
                 case 0:
                     System.out.println("Exit");

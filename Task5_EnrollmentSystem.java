@@ -1,7 +1,10 @@
 import java.util.*;
 
+Long-ValidationAndNormalization
 // Task 5 — HashSet & HashMap: Course Enrollment System
 // Author (Member 3): Long
+// Task 5  HashSet & HashMap: Course Enrollment System
+// Author (Member 1): An
 public class Task5_EnrollmentSystem {
     private HashMap<String, String> studentDirectory;
     private HashMap<String, HashSet<String>> courseEnrollments;
@@ -49,22 +52,55 @@ public class Task5_EnrollmentSystem {
     }
 
     public void registerStudent(String id, String name) {
-        // TODO: implement
+        if (id == null || name == null) return;
+        id = id.trim();
+        name = name.trim();
+        if (id.isEmpty() || name.isEmpty()) return;
+
+        studentDirectory.put(id, name);
+        System.out.println("Registered student " + id + " -> " + name);
     }
 
     public void createCourse(String courseCode) {
-        // TODO: implement
+        if (courseCode == null) return;
+        courseCode = courseCode.trim();
+        if (courseCode.isEmpty()) return;
+
+        courseEnrollments.putIfAbsent(courseCode, new HashSet<>());
+        System.out.println("Created course " + courseCode);
     }
 
     public boolean enroll(String courseCode, String studentId) {
-        // TODO: implement
+        courseCode = courseCode.trim().toUpperCase();
+    studentId = studentId.trim().toUpperCase();
+    if (!courseEnrollments.containsKey(courseCode)) {
         return false;
+    }
+    if (!studentDirectory.containsKey(studentId)) {
+        return false;
+    }
+    HashSet<String> students = courseEnrollments.get(courseCode);
+    if (students.contains(studentId)) {
+        return false;
+    }
+    students.add(studentId);
+    return true;
     }
 
     public boolean drop(String courseCode, String studentId) {
-        // TODO: implement
+        courseCode = courseCode.trim().toUpperCase();
+    studentId = studentId.trim().toUpperCase();
+    if (!courseEnrollments.containsKey(courseCode)) {
         return false;
     }
+    HashSet<String> students = courseEnrollments.get(courseCode);
+    if (!students.contains(studentId)) {
+        return false;
+    }
+    students.remove(studentId);
+    return true;
+}
+
 
     public void listStudentsInCourse(String courseCode) {
         // TODO: implement
@@ -82,93 +118,93 @@ public class Task5_EnrollmentSystem {
         }
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) 
+    {
         Task5_EnrollmentSystem system = new Task5_EnrollmentSystem();
         Scanner sc = new Scanner(System.in);
+        int choice;
 
-        while (true) {
-            System.out.println();
-            System.out.println("Menu:");
+        do {
+
+            System.out.println("\n===== MENU =====");
             System.out.println("1. Register student");
             System.out.println("2. Create course");
             System.out.println("3. Enroll student");
             System.out.println("4. Drop student");
             System.out.println("5. List students in course");
             System.out.println("6. Find courses of student");
+            System.out.println("7. Largest enrollment");
             System.out.println("0. Exit");
+
             System.out.print("Choice: ");
-
-            String choiceStr = sc.nextLine().trim();
-            int choice;
-            try {
-                choice = Integer.parseInt(choiceStr);
-            } catch (NumberFormatException e) {
-                System.out.println("Invalid choice. Please enter a number.");
-                continue;
-            }
-
-            if (choice == 0) {
-                System.out.println("Exit");
-                break;
-            }
+            choice = Integer.parseInt(sc.nextLine());
 
             switch (choice) {
-                case 1: {
-                    System.out.print("Enter student ID: ");
-                    String id = readNonEmpty(sc);
-                    System.out.print("Enter student name: ");
-                    String name = readNonEmpty(sc);
+
+                case 1:
+                    System.out.print("Student ID: ");
+                    String id = sc.nextLine();
+
+                    System.out.print("Student Name: ");
+                    String name = sc.nextLine();
+
                     system.registerStudent(id, name);
                     break;
-                }
-                case 2: {
-                    System.out.print("Enter course code: ");
-                    String courseCode = readNonEmpty(sc);
-                    system.createCourse(courseCode);
+
+                case 2:
+                    System.out.print("Course Code: ");
+                    String course = sc.nextLine();
+
+                    system.createCourse(course);
                     break;
-                }
-                case 3: {
-                    System.out.print("Enter course code: ");
-                    String courseCode = readNonEmpty(sc);
-                    System.out.print("Enter student ID: ");
-                    String studentId = readNonEmpty(sc);
-                    boolean ok = system.enroll(courseCode, studentId);
-                    if (ok) {
-                        System.out.println("Enrolled " + studentId + " into " + courseCode);
-                    } else {
-                        System.out.println("Enroll failed");
-                    }
+
+                case 3:
+                    System.out.print("Course Code: ");
+                    course = sc.nextLine();
+
+                    System.out.print("Student ID: ");
+                    id = sc.nextLine();
+
+                    system.enroll(course, id);
                     break;
-                }
-                case 4: {
-                    System.out.print("Enter course code: ");
-                    String courseCode = readNonEmpty(sc);
-                    System.out.print("Enter student ID: ");
-                    String studentId = readNonEmpty(sc);
-                    boolean ok = system.drop(courseCode, studentId);
-                    if (ok) {
-                        System.out.println("Dropped " + studentId + " from " + courseCode);
-                    } else {
-                        System.out.println("Drop failed");
-                    }
+
+                case 4:
+                    System.out.print("Course Code: ");
+                    course = sc.nextLine();
+
+                    System.out.print("Student ID: ");
+                    id = sc.nextLine();
+
+                    system.drop(course, id);
                     break;
-                }
-                case 5: {
-                    System.out.print("Enter course code: ");
-                    String courseCode = readNonEmpty(sc);
-                    system.listStudentsInCourse(courseCode);
+
+                case 5:
+                    System.out.print("Course Code: ");
+                    course = sc.nextLine();
+
+                    system.listStudentsInCourse(course);
                     break;
-                }
-                case 6: {
-                    System.out.print("Enter student ID: ");
-                    String studentId = readNonEmpty(sc);
-                    system.listCoursesOfStudent(studentId);
+
+                case 6:
+                    System.out.print("Student ID: ");
+                    id = sc.nextLine();
+
+                    system.listCoursesOfStudent(id);
                     break;
-                }
+
+             /*    case 7:
+                    system.largestEnrollmentCourse();
+                    break;*/
+
+                case 0:
+                    System.out.println("Exit");
+                    break;
+
                 default:
                     System.out.println("Invalid choice.");
             }
-        }
+
+        } while (choice != 0);
 
         sc.close();
     }

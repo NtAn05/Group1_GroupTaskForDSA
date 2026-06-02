@@ -120,9 +120,9 @@ public class Task5_EnrollmentSystem {
                     system.listCoursesOfStudent(id);
                     break;
 
-                case 7:
+             /*    case 7:
                     system.largestEnrollmentCourse();
-                    break;
+                    break;*/
 
                 case 0:
                     System.out.println("Exit");
